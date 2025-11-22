@@ -270,5 +270,54 @@ async def forgot_password(data: ForgotPasswordData):
     
     return {"message": "Password reset instructions sent to your email!"}
 
+@app.get("/contact")
+async def contact_page():
+    with open("static/contact.html", "r") as f:
+        return HTMLResponse(content=f.read())
+
+@app.get("/terms")
+async def terms_page():
+    with open("static/terms.html", "r") as f:
+        return HTMLResponse(content=f.read())ta.learning_style:
+        raise HTTPException(status_code=400, detail="Please fill both fields")
+    
+    try:
+        prompt = f"Learning resources for {data.skill} with {data.learning_style} learning style."
+        response = model.generate_content(prompt)
+        response_text = response.text if hasattr(response, 'text') else str(response)
+        
+        if session_id not in sessions:
+            sessions[session_id] = {"chat_history": [], "saved": True}
+        
+        user_input = f"Learning Resources: {data.skill} ({data.learning_style})"
+        sessions[session_id]["chat_history"].append([user_input, response_text])
+        sessions[session_id]["saved"] = False
+        
+        return {"response": response_text, "history": sessions[session_id]["chat_history"], "updated_history": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+@app.post("/api/contact")
+async def contact_us(data: ContactData):
+    if not all([data.name, data.email, data.subject, data.message]):
+        raise HTTPException(status_code=400, detail="Please fill all fields")
+    return {"message": "Thank you for contacting us! We'll get back to you soon."}
+
+@app.post("/api/forgot-password")
+async def forgot_password(data: ForgotPasswordData):
+    if not data.email:
+        raise HTTPException(status_code=400, detail="Please enter your email")
+    
+    user_found = False
+    for username, user_data in users_db.items():
+        if user_data["email"] == data.email:
+            user_found = True
+            break
+    
+    if not user_found:
+        raise HTTPException(status_code=400, detail="Email not found")
+    
+    return {"message": "Password reset instructions sent to your email!"}
+
 # Export for Vercel
 handler = app
