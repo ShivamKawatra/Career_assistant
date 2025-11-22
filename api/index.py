@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import google.generativeai as genai
 import os
@@ -11,6 +12,15 @@ genai.configure(api_key=api_key)
 model = genai.GenerativeModel("gemini-2.5-flash-lite")
 
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Data models
 class ChatMessage(BaseModel):
@@ -230,6 +240,87 @@ async def learning_resources(data: LearningData, request: Request):
     session_id = request.headers.get("session-id", "guest")
     
     if not data.skill or not data.learning_style:
+        raise HTTPException(status_code=400, detail="Please fill both fields")
+    
+    try:
+        prompt = f"Learning resources for {data.skill} with {data.learning_style} learning style."
+        response = model.generate_content(prompt)
+        response_text = response.text if hasattr(response, 'text') else str(response)
+        
+        if session_id not in sessions:
+            sessions[session_id] = {"chat_history": [], "saved": True}
+        
+        user_input = f"Learning Resources: {data.skill} ({data.learning_style})"
+        sessions[session_id]["chat_history"].append([user_input, response_text])
+        sessions[session_id]["saved"] = False
+        
+        return {"response": response_text, "history": sessions[session_id]["chat_history"], "updated_history": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+@app.post("/api/contact")
+async def contact_us(data: ContactData):
+    if not all([data.name, data.email, data.subject, data.message]):
+        raise HTTPException(status_code=400, detail="Please fill all fields")
+    return {"message": "Thank you for contacting us! We'll get back to you soon."}
+
+@app.post("/api/forgot-password")
+async def forgot_password(data: ForgotPasswordData):
+    if not data.email:
+        raise HTTPException(status_code=400, detail="Please enter your email")
+    
+    user_found = False
+    for username, user_data in users_db.items():
+        if user_data["email"] == data.email:
+            user_found = True
+            break
+    
+    if not user_found:
+        raise HTTPException(status_code=400, detail="Email not found")
+    
+    return {"message": "Password reset instructions sent to your email!"}
+
+@app.post("/api/save-chat")
+async def save_chat(request: Request):
+    session_id = request.headers.get("session-id")
+    username = request.headers.get("username")
+    
+    if not session_id or not username or username not in users_db:
+        raise HTTPException(status_code=400, detail="Please login to save chats")
+    
+    if session_id not in sessions or not sessions[session_id]["chat_history"]:
+        raise HTTPException(status_code=400, detail="No chat to save")
+    
+    if sessions[session_id]["saved"]:
+        return {"message": "Chat already saved"}
+    
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    history = sessions[session_id]["chat_history"]
+    title = "New Chat"
+    if history:
+        title = history[0][0][:30] + "..." if len(history[0][0]) > 30 else history[0][0]
+    
+    chat_data = {
+        "title": title,
+        "timestamp": timestamp,
+        "messages": history.copy()
+    }
+    
+    users_db[username]["chat_history"].append(chat_data)
+    sessions[session_id]["saved"] = True
+    
+    return {"message": "Chat saved successfully!"}
+
+@app.get("/api/clear-chat")
+async def clear_chat(request: Request):
+    session_id = request.headers.get("session-id", "guest")
+    if session_id in sessions:
+        sessions[session_id]["chat_history"] = []
+        sessions[session_id]["saved"] = True
+    return {"message": "Chat cleared!", "history": []}
+
+# Export handler for Vercel
+handler = appta.learning_style:
         raise HTTPException(status_code=400, detail="Please fill both fields")
     
     try:
