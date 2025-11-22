@@ -24,6 +24,30 @@
       "dest": "/api/chat.py"
     },
     {
+      "src": "/api/assess",
+      "dest": "/api/assess.py"
+    },
+    {
+      "src": "/api/skills",
+      "dest": "/api/skills.py"
+    },
+    {
+      "src": "/api/resume",
+      "dest": "/api/resume.py"
+    },
+    {
+      "src": "/api/market",
+      "dest": "/api/market.py"
+    },
+    {
+      "src": "/api/learning",
+      "dest": "/api/learning.py"
+    },
+    {
+      "src": "/api/contact",
+      "dest": "/api/contact.py"
+    },
+    {
       "src": "/static/(.*)",
       "dest": "/static/$1"
     },
