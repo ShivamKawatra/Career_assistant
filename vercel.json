@@ -1,35 +1,7 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/main.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "static/**",
-      "use": "@vercel/static"
+  "functions": {
+    "api/index.py": {
+      "runtime": "python3.9"
     }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/main.py"
-    },
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
-      "src": "/contact.html",
-      "dest": "/static/contact.html"
-    },
-    {
-      "src": "/terms.html",
-      "dest": "/static/terms.html"
-    },
-    {
-      "src": "/",
-      "dest": "/static/index.html"
-    }
-  ]
+  }
 }
