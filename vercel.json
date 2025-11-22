@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/*.py",
+      "src": "api/main.py",
       "use": "@vercel/python"
     },
     {
@@ -12,52 +12,8 @@
   ],
   "routes": [
     {
-      "src": "/api/signup",
-      "dest": "/api/signup.py"
-    },
-    {
-      "src": "/api/login",
-      "dest": "/api/login.py"
-    },
-    {
-      "src": "/api/chat",
-      "dest": "/api/chat.py"
-    },
-    {
-      "src": "/api/assess",
-      "dest": "/api/assess.py"
-    },
-    {
-      "src": "/api/skills",
-      "dest": "/api/skills.py"
-    },
-    {
-      "src": "/api/resume",
-      "dest": "/api/resume.py"
-    },
-    {
-      "src": "/api/market",
-      "dest": "/api/market.py"
-    },
-    {
-      "src": "/api/learning",
-      "dest": "/api/learning.py"
-    },
-    {
-      "src": "/api/contact",
-      "dest": "/api/contact.py"
-    },
-    {
-      "src": "/api/forgot-password",
-      "dest": "/api/forgot-password.py"
-    },
-    {
-      "src": "/api/save-chat",
-      "dest": "/api/save-chat.py"
-    },
-    {
-      "src": "/api/clear-chat",
-      "dest": "/api/clear-chat.py"
+      "src": "/api/(.*)",
+      "dest": "/api/main.py"
     },
     {
       "src": "/static/(.*)",
