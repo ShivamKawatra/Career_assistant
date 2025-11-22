@@ -48,6 +48,18 @@
       "dest": "/api/contact.py"
     },
     {
+      "src": "/api/forgot-password",
+      "dest": "/api/forgot-password.py"
+    },
+    {
+      "src": "/api/save-chat",
+      "dest": "/api/save-chat.py"
+    },
+    {
+      "src": "/api/clear-chat",
+      "dest": "/api/clear-chat.py"
+    },
+    {
       "src": "/static/(.*)",
       "dest": "/static/$1"
     },
