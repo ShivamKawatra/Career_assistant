@@ -1,2 +1,1 @@
-fastapi
-google-generativeai
+# No dependencies needed for basic function
