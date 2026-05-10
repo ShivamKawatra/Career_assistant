@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NotesApp — Organize Your Thoughts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body class="landing-body">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="/" class="nav-logo">📝 NotesApp</a>
+    <div class="nav-links" id="navLinks">
+      <a href="/login.html" class="nav-link">🔑 Login</a>
+      <a href="/signup.html" class="nav-link nav-cta">✨ Sign Up Free</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <main class="landing-main">
+    <section class="hero">
+      <div class="hero-badge">✦ Your personal note space</div>
+      <h1 class="hero-title">Capture every idea.<br/><span class="hero-gradient">Never forget a thing.</span></h1>
+      <p class="hero-desc">NotesApp lets you create, organize, and search your notes from anywhere. Secure, fast, and beautifully simple.</p>
+      <div class="hero-actions">
+        <a href="/signup.html" class="btn-hero-primary">Get Started Free →</a>
+        <a href="/login.html" class="btn-hero-ghost">Sign In</a>
+      </div>
+    </section>
+
+    <!-- Feature cards -->
+    <section class="features">
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>Private & Secure</h3>
+        <p>Your notes are tied to your account. Only you can see them — always.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Instant Search</h3>
+        <p>Find any note in milliseconds with real-time full-text search.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🗂️</div>
+        <h3>Smart Categories</h3>
+        <p>Organize notes into Work, Personal, Ideas, Todo and more.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💾</div>
+        <h3>Always Saved</h3>
+        <p>Notes persist in a database — log in from anywhere and they're there.</p>
+      </div>
+    </section>
+
+    <!-- CTA strip -->
+    <section class="cta-strip">
+      <h2>Ready to get organized?</h2>
+      <p>Create your free account in seconds. No credit card needed.</p>
+      <a href="/signup.html" class="btn-hero-primary">Create Free Account →</a>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span>© 2025 NotesApp — Built with Node.js, Express &amp; SQLite</span>
+    <div class="footer-links">
+      <a href="/login.html" class="footer-home">🔑 Login</a>
+      <a href="/signup.html" class="footer-home">✨ Sign Up</a>
+    </div>
+  </footer>
+
+  <script>
+    // If already logged in, swap navbar to show dashboard link
+    fetch('/api/me').then(r => {
+      if (r.ok) return r.json();
+    }).then(user => {
+      if (!user) return;
+      const nav = document.getElementById('navLinks');
+      nav.innerHTML = `
+        <span class="nav-user">👤 ${user.name}</span>
+        <a href="/dashboard" class="nav-link nav-cta">📝 My Notes</a>
+      `;
+      // Also update hero buttons
+      document.querySelector('.hero-actions').innerHTML = `
+        <a href="/dashboard" class="btn-hero-primary">Open My Notes →</a>
+      `;
+    });
+  </script>
+</body>
+</html>

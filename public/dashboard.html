@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — NotesApp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="/" class="nav-logo">📝 NotesApp</a>
+    <div class="nav-links">
+      <a href="/dashboard" class="nav-link active" id="navNewNote">+ New Note</a>
+      <a href="/profile.html" class="nav-link" id="profileBtn">👤 Profile</a>
+      <span class="nav-user" id="navUser"></span>
+      <button class="nav-link nav-logout" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </nav>
+
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="user-greeting" id="userGreeting"></div>
+        <button id="newNoteBtn" class="btn-primary">+ New Note</button>
+      </div>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 Search notes..."/>
+      </div>
+      <div class="category-filter">
+        <label>Category</label>
+        <select id="categoryFilter">
+          <option value="All">All</option>
+        </select>
+      </div>
+      <div class="stats" id="stats">0 notes</div>
+    </aside>
+
+    <!-- Notes List -->
+    <main class="notes-list" id="notesList">
+      <div class="empty-state" id="emptyState">
+        <p>📄 No notes yet.<br/>Click <strong>+ New Note</strong> to get started.</p>
+      </div>
+    </main>
+
+    <!-- Editor Panel -->
+    <section class="editor-panel" id="editorPanel">
+      <div class="editor-header">
+        <span id="editorTitle">Select or create a note</span>
+        <div class="editor-actions" id="editorActions" style="display:none">
+          <button id="saveBtn" class="btn-primary">Save</button>
+          <button id="deleteBtn" class="btn-danger">Delete</button>
+          <button id="cancelBtn" class="btn-ghost">Cancel</button>
+        </div>
+      </div>
+      <div class="editor-form" id="editorForm" style="display:none">
+        <input type="text" id="noteTitle" placeholder="Note title..." maxlength="100"/>
+        <div class="error" id="titleError"></div>
+        <select id="noteCategory">
+          <option>General</option>
+          <option>Work</option>
+          <option>Personal</option>
+          <option>Ideas</option>
+          <option>Todo</option>
+        </select>
+        <textarea id="noteContent" placeholder="Write your note here..." rows="18"></textarea>
+        <div class="error" id="contentError"></div>
+      </div>
+      <div class="note-view" id="noteView" style="display:none">
+        <div class="note-view-meta">
+          <span class="badge" id="viewCategory"></span>
+          <span class="note-date" id="viewDate"></span>
+        </div>
+        <h2 id="viewTitle"></h2>
+        <p id="viewContent"></p>
+        <div class="view-actions">
+          <button id="editBtn" class="btn-primary">✏️ Edit</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span>© 2025 NotesApp — Built with Node.js, Express &amp; SQLite</span>
+    <a href="/" class="footer-home">🏠 Back to Home</a>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
