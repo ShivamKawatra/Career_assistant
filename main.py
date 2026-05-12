@@ -3,17 +3,17 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import google.generativeai as genai
+from google import genai
 import os
 from datetime import datetime
 from dotenv import load_dotenv
 from typing import List, Dict, Optional
 
-# Load API key
+# Load API key (dotenv for local dev, Vercel injects env vars automatically)
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=api_key)
-model = genai.GenerativeModel("gemini-2.5-flash-lite")
+client = genai.Client(api_key=api_key)
+MODEL = "gemini-2.5-flash"
 
 app = FastAPI()
 
@@ -27,6 +27,18 @@ app.add_middleware(
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/contact", response_class=HTMLResponse)
+async def contact_page():
+    return FileResponse('static/contact.html')
+
+@app.get("/terms", response_class=HTMLResponse)
+async def terms_page():
+    return FileResponse('static/terms.html')
+
+@app.get("/privacy", response_class=HTMLResponse)
+async def privacy_page():
+    return FileResponse('static/privacy.html')
 
 # Data models
 class ChatMessage(BaseModel):
@@ -129,8 +141,8 @@ async def chat(data: ChatMessage, request: Request):
     
     try:
         prompt = f"As a career advisor, answer: {data.message}"
-        response = model.generate_content(prompt)
-        response_text = response.text if hasattr(response, 'text') else str(response)
+        response = client.models.generate_content(model=MODEL, contents=prompt)
+        response_text = response.text
         
         if session_id not in sessions:
             sessions[session_id] = {"chat_history": [], "saved": True}
@@ -159,8 +171,8 @@ async def assess_career(data: AssessmentData, request: Request):
         
         Suggest 3 career paths with explanations."""
         
-        response = model.generate_content(prompt)
-        response_text = response.text if hasattr(response, 'text') else str(response)
+        response = client.models.generate_content(model=MODEL, contents=prompt)
+        response_text = response.text
         
         if session_id not in sessions:
             sessions[session_id] = {"chat_history": [], "saved": True}
@@ -182,8 +194,8 @@ async def analyze_skills(data: SkillsData, request: Request):
     
     try:
         prompt = f"Skills: {data.current_skills}, Target: {data.target_role}. Identify gaps and learning path."
-        response = model.generate_content(prompt)
-        response_text = response.text if hasattr(response, 'text') else str(response)
+        response = client.models.generate_content(model=MODEL, contents=prompt)
+        response_text = response.text
         
         if session_id not in sessions:
             sessions[session_id] = {"chat_history": [], "saved": True}
@@ -205,8 +217,8 @@ async def resume_tips(data: ResumeData, request: Request):
     
     try:
         prompt = f"Resume tips for {data.job_role} at {data.experience_level} level. Give 5 specific tips."
-        response = model.generate_content(prompt)
-        response_text = response.text if hasattr(response, 'text') else str(response)
+        response = client.models.generate_content(model=MODEL, contents=prompt)
+        response_text = response.text
         
         if session_id not in sessions:
             sessions[session_id] = {"chat_history": [], "saved": True}
@@ -228,8 +240,8 @@ async def market_insights(data: MarketData, request: Request):
     
     try:
         prompt = f"Job market insights for {data.field} in {data.location}. Include salary and trends."
-        response = model.generate_content(prompt)
-        response_text = response.text if hasattr(response, 'text') else str(response)
+        response = client.models.generate_content(model=MODEL, contents=prompt)
+        response_text = response.text
         
         if session_id not in sessions:
             sessions[session_id] = {"chat_history": [], "saved": True}
@@ -251,8 +263,8 @@ async def learning_resources(data: LearningData, request: Request):
     
     try:
         prompt = f"Learning resources for {data.skill} with {data.learning_style} learning style."
-        response = model.generate_content(prompt)
-        response_text = response.text if hasattr(response, 'text') else str(response)
+        response = client.models.generate_content(model=MODEL, contents=prompt)
+        response_text = response.text
         
         if session_id not in sessions:
             sessions[session_id] = {"chat_history": [], "saved": True}
@@ -329,14 +341,6 @@ async def clear_chat(request: Request):
         sessions[session_id]["chat_history"] = []
         sessions[session_id]["saved"] = True
     return {"message": "Chat cleared!", "history": []}
-
-@app.get("/contact", response_class=HTMLResponse)
-async def contact_page():
-    return FileResponse('static/contact.html')
-
-@app.get("/terms", response_class=HTMLResponse)
-async def terms_page():
-    return FileResponse('static/terms.html')
 
 if __name__ == "__main__":
     import uvicorn

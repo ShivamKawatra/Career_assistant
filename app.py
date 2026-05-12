@@ -1,5 +1,5 @@
 import gradio as gr
-import google.generativeai as genai
+from google import genai
 import os
 from datetime import datetime
 from dotenv import load_dotenv
@@ -7,10 +7,8 @@ from dotenv import load_dotenv
 # Load API key from .env
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=api_key)
-
-# Initialize Gemini model
-model = genai.GenerativeModel("gemini-2.5-flash-lite")
+client = genai.Client(api_key=api_key)
+MODEL = "gemini-2.5-flash"
 
 # Simple storage
 users_db = {}
@@ -25,8 +23,8 @@ def chat_with_ai(user_input, history):
     
     try:
         prompt = f"As a career advisor, answer: {user_input}"
-        response = model.generate_content(prompt)
-        response_text = response.text if hasattr(response, 'text') else str(response)
+        response = client.models.generate_content(model=MODEL, contents=prompt)
+        response_text = response.text
         history = add_to_history(user_input, response_text, history)
         return "", history, gr.update(visible=False)
     except Exception as e:
@@ -159,8 +157,8 @@ def assess_career(q1, q2, q3, q4, q5, history):
         
         Suggest 3 career paths with explanations."""
         
-        response = model.generate_content(prompt)
-        response_text = response.text if hasattr(response, 'text') else str(response)
+        response = client.models.generate_content(model=MODEL, contents=prompt)
+        response_text = response.text
         history = add_to_history(user_input, response_text, history)
         return response_text, history
     except Exception as e:
@@ -175,8 +173,8 @@ def analyze_skills(skills, role, history):
     try:
         user_input = f"Skills Analysis: {skills} -> {role}"
         prompt = f"Skills: {skills}, Target: {role}. Identify gaps and learning path."
-        response = model.generate_content(prompt)
-        response_text = response.text if hasattr(response, 'text') else str(response)
+        response = client.models.generate_content(model=MODEL, contents=prompt)
+        response_text = response.text
         history = add_to_history(user_input, response_text, history)
         return response_text, history
     except Exception as e:
@@ -190,8 +188,8 @@ def resume_tips(job, level, history):
     try:
         user_input = f"Resume Tips: {job} ({level})"
         prompt = f"Resume tips for {job} at {level} level. Give 5 specific tips."
-        response = model.generate_content(prompt)
-        response_text = response.text if hasattr(response, 'text') else str(response)
+        response = client.models.generate_content(model=MODEL, contents=prompt)
+        response_text = response.text
         history = add_to_history(user_input, response_text, history)
         return response_text, history
     except Exception as e:
@@ -205,8 +203,8 @@ def market_insights(field, location, history):
     try:
         user_input = f"Market Insights: {field} in {location}"
         prompt = f"Job market insights for {field} in {location}. Include salary and trends."
-        response = model.generate_content(prompt)
-        response_text = response.text if hasattr(response, 'text') else str(response)
+        response = client.models.generate_content(model=MODEL, contents=prompt)
+        response_text = response.text
         history = add_to_history(user_input, response_text, history)
         return response_text, history
     except Exception as e:
@@ -220,8 +218,8 @@ def learning_resources(skill, style, history):
     try:
         user_input = f"Learning Resources: {skill} ({style})"
         prompt = f"Learning resources for {skill} with {style} learning style."
-        response = model.generate_content(prompt)
-        response_text = response.text if hasattr(response, 'text') else str(response)
+        response = client.models.generate_content(model=MODEL, contents=prompt)
+        response_text = response.text
         history = add_to_history(user_input, response_text, history)
         return response_text, history
     except Exception as e:
