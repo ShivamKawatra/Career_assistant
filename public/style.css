@@ -49,7 +49,10 @@ body {
   color: var(--text-1);
   text-decoration: none;
   letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: opacity 0.18s;
 }
+.nav-logo:hover { opacity: 0.8; }
 
 .nav-links {
   display: flex;
